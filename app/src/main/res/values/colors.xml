@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Widget colors: system dynamic palette. Light/dark variants in values-night. -->
+    <color name="widget_background">@android:color/system_neutral1_50</color>
+    <color name="widget_panel">@android:color/system_neutral1_100</color>
 </resources>

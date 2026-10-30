@@ -25,16 +25,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -186,7 +187,7 @@ class MainActivity : ComponentActivity() {
                             Icon(
                                 imageVector = Icons.Default.DateRange,
                                 contentDescription = applicationContext.getString(R.string.open_calendar_app),
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -194,7 +195,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(24.dp))
-                            .background(Color(0xFF2F3035))
+                            .background(colorResource(R.color.widget_panel))
                             .padding(8.dp)
                     ) {
                         LazyColumn {
@@ -209,7 +210,10 @@ class MainActivity : ComponentActivity() {
                                         Box(
                                             modifier = Modifier
                                                 .size(8.dp)
-                                                .background(Color.Gray, shape = RectangleShape)
+                                                .background(
+                                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    shape = RectangleShape
+                                                )
                                         )
                                         Text(
                                             text = date.format(
@@ -219,7 +223,7 @@ class MainActivity : ComponentActivity() {
                                             ),
                                             style = TextStyle(
                                                 fontSize = 20.sp,
-                                                color = Color.Gray,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 fontFamily = dotsFontFamily
                                             ),
                                             modifier = Modifier.padding(8.dp)
@@ -238,7 +242,7 @@ class MainActivity : ComponentActivity() {
                                             text = event.title,
                                             style = TextStyle(
                                                 fontSize = 16.sp,
-                                                color = Color.LightGray
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
@@ -248,7 +252,7 @@ class MainActivity : ComponentActivity() {
                                                 .toLocalTime()
                                                 .format(DateTimeFormatter.ofPattern("HH:mm")),
                                             style = TextStyle(
-                                                color = Color.Gray,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 fontSize = 16.sp,
                                                 fontFamily = FontFamily.Monospace
                                             )

@@ -3,12 +3,13 @@ package com.cwec.n0w
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.Button
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.Action
@@ -19,7 +20,6 @@ import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
-import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -43,12 +43,16 @@ class CalendarWidget : GlanceAppWidget() {
             storage.fetchCalendarEvents(context)
         }
         provideContent {
-            CalendarWidgetContent(
-                context,
-                storage.getEvents(),
-                hasPermission,
-                actionStartActivity<MainActivity>()
-            )
+            // Default GlanceTheme colors = system dynamic colors (Material You, from the system theme),
+            // with automatic light/dark variants.
+            GlanceTheme {
+                CalendarWidgetContent(
+                    context,
+                    storage.getEvents(),
+                    hasPermission,
+                    actionStartActivity<MainActivity>()
+                )
+            }
         }
     }
 
@@ -65,7 +69,9 @@ class CalendarWidget : GlanceAppWidget() {
         val dayOfWeekName =
             dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
 
-        val bitmaps = remember(dayOfWeek) {
+        // The dot-font text is rasterized as an opaque white mask and colored at render time
+        // with ColorFilter.tint(), so it follows the theme instead of being baked into the bitmap.
+        val bitmaps = remember(dayOfMonth, dayOfWeekName) {
             val day =
                 Helper().createTextBitmap(
                     context,
@@ -74,7 +80,12 @@ class CalendarWidget : GlanceAppWidget() {
                     android.graphics.Color.WHITE
                 )
             val name =
-                Helper().createTextBitmap(context, dayOfWeekName, 22f, android.graphics.Color.GRAY)
+                Helper().createTextBitmap(
+                    context,
+                    dayOfWeekName,
+                    22f,
+                    android.graphics.Color.WHITE
+                )
             Pair(day, name)
         }
 
@@ -82,7 +93,7 @@ class CalendarWidget : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .appWidgetBackground()
-                .background(Color(0xFF191C21))
+                .background(R.color.widget_background)
                 .cornerRadius(24.dp)
                 .clickable(openActivityAction),
             contentAlignment = Alignment.Center
@@ -98,19 +109,21 @@ class CalendarWidget : GlanceAppWidget() {
                 ) {
                     Image(
                         provider = ImageProvider(bitmaps.first),
-                        contentDescription = "Renderer dayOfMonth"
+                        contentDescription = "Renderer dayOfMonth",
+                        colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurface)
                     )
                     Spacer(GlanceModifier.defaultWeight())
                     Image(
                         provider = ImageProvider(bitmaps.second),
-                        contentDescription = "Renderer dayOfWeek"
+                        contentDescription = "Renderer dayOfWeek",
+                        colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant)
                     )
                 }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .fillMaxSize()
-                        .background(Color(0xFF2F3035))
+                        .background(R.color.widget_panel)
                         .cornerRadius(24.dp)
                         .padding(16.dp, 4.dp),
                 ) {
@@ -123,7 +136,7 @@ class CalendarWidget : GlanceAppWidget() {
                             Text(
                                 text = context.getString(R.string.no_access_to_the_calendar),
                                 style = TextStyle(
-                                    color = ColorProvider(Color.White, Color.White),
+                                    color = GlanceTheme.colors.onSurface,
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 ),
@@ -140,7 +153,7 @@ class CalendarWidget : GlanceAppWidget() {
                         Text(
                             text = context.getString(R.string.no_events),
                             style = TextStyle(
-                                color = ColorProvider(Color.White, Color.White),
+                                color = GlanceTheme.colors.onSurface,
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center
                             ),
@@ -156,7 +169,7 @@ class CalendarWidget : GlanceAppWidget() {
                                 Text(
                                     text = event.getFormattedStartTime(context),
                                     style = TextStyle(
-                                        color = ColorProvider(Color.Gray, Color.Gray),
+                                        color = GlanceTheme.colors.onSurfaceVariant,
                                         fontSize = 8.sp,
                                         textAlign = TextAlign.Start
                                     ),
@@ -165,7 +178,7 @@ class CalendarWidget : GlanceAppWidget() {
                                 Text(
                                     text = event.title,
                                     style = TextStyle(
-                                        color = ColorProvider(Color.White, Color.White),
+                                        color = GlanceTheme.colors.onSurface,
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Start
                                     ),
